@@ -1,16 +1,13 @@
 <template>
   <div>
     <header class="head">
-      <div class="left-buttons" @click="goBack">
+      <div class="left-buttons">
         <i class="icon-back"></i>
       </div>
       <h1 class="head-title">智能客服</h1>
     </header>
-     <!-- <section class="content has-foot" :class="question.list.length>0?'':'has—no-words'" @touchstart="scrollTouch"
-      @touchmove="scrollTouch" @touchend="scrollTouch"> -->
       <section ref="addContent" class="content has-foot" :class="question.list.length>0?'':'has—no-words'" >
       <el-scrollbar style="height:100%" ref="myScrollbar">
-      
       <div class="scroll">
         <p v-if="hasMore" @click.once="moreNew" class="has-more-text">点击可以查看历史消息哦</p>
         <div class="list-container">
@@ -68,17 +65,16 @@
 
 <script>
   import { promised, Promise } from 'q';
-  import qs from 'qs';
+  import { 
+    getHotword,
+    postWord
+    }
+  from '@/api/api.js';
   var db;
-  var isdo = true;
   export default {
     name: "aiservice",
     data() {
       return {
-        solveSilver:'',
-        notSolveSilver:'',
-        notSolve:'',
-        solve:'',
         toAlter:'checked',
         formData: {
           word: ""
@@ -99,7 +95,7 @@
           {
             received: true,
             content:
-              ["Hi~您好，我是天府银行智能机器人「天天」，为您提供自助服务，请问有什么想对我说的吗？"],
+              ["Hi~您好，我是聪明的机器人，为您提供自助服务，请问有什么想对我说的吗？"],
             guessList: {
               title: '',
               list: []
@@ -130,18 +126,6 @@
         sec:''
       };
     },
-    // computed: {
-    //   id: function () {
-    //     var args = location.href.split('#')[0].split('?')[1] || '';
-    //     var params = {};
-    //     args = args.split('&');
-    //     args.forEach(function (item) {
-    //       var temp = item.split('=');
-    //       params[temp[0]] = temp[1];
-    //     });
-    //     return params.uid;
-    //   }
-    // },
     mounted() {
       //动态获取，改变内容框bottom
       var scrolldom = this.$refs.addContent;
@@ -152,38 +136,71 @@
         ,1000)
     },
     created() {
-      // this.secret = this.getQueryVariable("sec");
-      // this.uid = this.getQueryVariable("uid");
-      // this.key = this.getQueryVariable("key");
-      // this.timestamp = parseInt(this.getQueryVariable("timestamp"));
-      this.getHotwordss();
+      this.getHotwordMethod();
       this.isIndexedDB()
     },
     methods: {
-      getHotwordss() {
-          var self = this;
-          var url = "/words";
-          this.$axios.get(url).then(response=>{
-            self.question.list = response.data||[];
-            console.log(self.question.list)
-          }).catch(err=>{
-          var pushitem = {
-              received: true,
-              feedback: false,
-              useful: false,
-              tel: false,
-              content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
-              guessList: {
-              list: []
+     getHotwordMethod(parma) {
+        var that = this;
+       getHotword(
+          parma
+          ).then((response) => {
+            that.question.list = response.data.words||[];
+            console.log(response)
+          }).catch((err) => {
+            var pushitem = {
+                received: true,
+                feedback: false,
+                useful: false,
+                tel: false,
+                content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                guessList: {
+                list: []
+              }
             }
-          }
-          self.list.push(pushitem);
-          self.save(self.list);
-      });
+            that.list.push(pushitem);
+            that.save(that.list);
+               })
       },
-      goBack() {
-        window.location.href = 'close://back-to-cgnb-mobilebank'
-      },
+     postWordMethod(parma) {
+        var that = this;
+       postWord(
+          parma
+          ).then((res) => {
+            res.data.jumps?that.href = res.data.jumps[0].uri:'';
+            var say = res.data.say.replace(/\&nbsp/g, "");
+            that.requestId = res.headers['x-request-id'];
+            var pushitem = {
+              received: true,
+              feedback: true,
+              useful: true,
+              tel: true,
+              linkText: res.data.jumps?res.data.jumps[0].title||'':res.data.jumps,
+              content: say.split('\n'),
+              guessList: {}
+            }
+            console.log(pushitem)
+            res.data.guides ? pushitem.guessList = {
+              title: '猜您需要：',
+              list: res.data.guides
+            } : '';
+            that.list.push(pushitem);
+            that.save(that.list);
+          }).catch((err) => {
+            var pushitem = {
+                received: true,
+                feedback: false,
+                useful: false,
+                tel: false,
+                content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                guessList: {
+                list: []
+              }
+            }
+            self.list.push(pushitem);
+            self.save(self.list);
+               })
+      }, 
       isIndexedDB() {
         var self = this;
         this.openDatabase().then(function (db) {
@@ -215,57 +232,6 @@
         }, function (err) {
           console.log('open database error', err);
         });
-      },
-      // getQueryVariable(variable) {
-      //  var query = location.href.substring(1).slice(0,-2);
-      //  var vars = query.split("?");
-      //  var varss = vars[1].split("&")
-      //  for (var i=0;i<varss.length;i++) {
-      //          var pair = varss[i].split("=");
-      //          if(pair[0] == variable){return pair[1];}
-      //   };
-      //  return(false);
-      //  },
-      loginValidation() {
-        var that = this;
-        var url = "/mb_api/jarvis/ai/v1/login"
-        this.$axios.post(url,{channel:this.key,secret:this.secret,uid:this.uid,timestamp:this.timestamp}).then(response=>{
-          this.getHotwords();
-          }).catch(err=>{
-          var pushitem = {
-              received: true,
-              feedback: false,
-              useful: false,
-              tel: false,
-              content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
-              guessList: {
-              list: []
-            }
-          }
-          that.list.push(pushitem);
-          that.save(that.list);
-      });
-      },
-      getHotwords() {
-          var self = this;
-          var url = "/mb_api/jarvis/ai/v1/channel/"+this.key+"/hotwords?";
-          url += "uid=" + this.uid;
-          this.$axios.get(url).then(response=>{
-            self.question.list = response.data||[];
-          }).catch(err=>{
-          var pushitem = {
-              received: true,
-              feedback: false,
-              useful: false,
-              tel: false,
-              content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
-              guessList: {
-              list: []
-            }
-          }
-          self.list.push(pushitem);
-          self.save(self.list);
-      });
       },
       scrollTouch(e) {
         var self = this;
@@ -371,48 +337,7 @@
           sent: true,
           content: text
         });
-        var self = this;
-        var url = "/mb_api/jarvis/ai/v1/channel/"+this.key+"/query?";
-        url += "text=" + encodeURIComponent(text);
-        url += "&uid=" + this.uid;
-        // url += "&prd=" + '1234'; //this.id
-        this.$axios.get(url).then(success, error);
-        function success(data) {
-          data.data.jumps?self.href = data.data.jumps[0].uri:'';
-          var say = data.data.say.replace(/\&nbsp/g, "");
-          self.requestId = data.headers['x-request-id'];
-          var pushitem = {
-            received: true,
-            feedback: true,
-            useful: true,
-            tel: true,
-            linkText: data.data.jumps?data.data.jumps[0].title||'':data.data.jumps,
-            content: say.split('\n'),
-            guessList: {}
-          }
-          console.log(pushitem)
-          data.data.guides ? pushitem.guessList = {
-            title: '猜您需要：',
-            list: data.data.guides
-          } : '';
-          self.list.push(pushitem);
-          self.save(self.list);
-        }
-        function error(err) {
-          var pushitem = {
-              received: true,
-              feedback: false,
-              useful: false,
-              tel: false,
-              // content: err.response.status==401?err.response.data.split('\n'):err.message.split('\n'),
-              content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
-              guessList: {
-              list: []
-            }
-          }
-          self.list.push(pushitem);
-          self.save(self.list);
-        }
+        this.postWordMethod({text: text})
       },
       setUseful(item, type) {
         if(item.disabled){    
@@ -461,8 +386,6 @@
           self.list.push(pushitem);
           self.save(self.list);
         };
-        // isdo = false;
-      // }
       },
       inputLine(text) {
         this.formData.word = text;
@@ -662,7 +585,7 @@
     height: 3rem;
     margin-left: -5rem;
     margin-top: -1rem;
-    background-image: url("../assets/icons/icon-received.png");
+    background-image: url("../assets/icons/smile.png");
     background-size: 3rem;
     background-repeat: no-repeat;
   }

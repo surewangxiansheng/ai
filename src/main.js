@@ -8,7 +8,7 @@ import './assets/css/style.css'
 
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
-axios.defaults.baseURL = 'http://localhost:9090'
+// axios.defaults.baseURL = 'http://localhost:9090'
 
 new Vue({
   router,
