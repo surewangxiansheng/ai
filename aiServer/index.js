@@ -69,25 +69,34 @@ app.get('/', function (req, res) {
     say: '我吐了！',
   },
   {
+    text: '滚啊。', 
+    say: '文明，和谐',
+  },
+  {
     text: '四川大学锦城学院在哪里', 
     say: '四川大学锦城学院（Jincheng College of Sichuan University）位于四川省会成都市，是经中华人民共和国教育部批准、由教育部直属高校四川大学申办、四川锦城实业发展有限公司投资的全日制普通本科高校，多学科、综合性的应用型大学。\n学校成立时间:  2005年5月9日\n地处:  四川省成都市成都高新技术产业开发区西部园区西源大道1号',
     jumps: [{
       uri:'http://www.scujcc.edu.cn/',
-      title: '学校官网'
+      title: '四川大学锦城学院学校官网'
         }],
     guides: ['学校规模','知名校友','主要院系']
   },
   {
     text: '学校规模', 
     say: '四川大学锦城学院校园占地面积1500余亩，现设有11个二级学院、52个本科专业、18个专科专业、100余个专业方向，在校师生20000余人，本科生16000余人，形成了文、理、工、经、管、艺六个学科门类协调发展，多层次、多形式的专业门类较为齐全的综合性的办学格局。',
+    guides: ['知名校友','主要院系']
   },
   {
     text: '四川大学锦城学院知名校友', 
-    say: '张皓宸、陈钰琪、凌菱、廖翎结、欧九儿',
+    say: '四川大学锦城学院知名校友有：\n张皓宸、陈钰琪、凌菱、廖翎结、欧九儿',
   },
   {
     text: '四川大学锦城学院主要院系', 
     say: '四川大学锦城学院主要院系有:\n电子信息学院\n计算机与软件学院\n财务会计学院\n金融学院\n艺术学院\n工商管理学院\n文学与传媒学院\n建筑学院\n文学与传媒学院等',
+  },
+  {
+    text: '四川大学锦城学院计算机与软件学院', 
+    say: '文明，和谐',
   },
   //闲聊
   {
@@ -105,7 +114,23 @@ app.get('/', function (req, res) {
       uri:'www.baidu.com',
       title: '跳一跳'
         }],
-    guides: ['蔡许昆','罗志祥']
+    guides: ['蔡徐坤','罗志祥','林俊杰','周杰伦']
+  },
+  {
+    text: '蔡徐坤', 
+    say: '逗你玩呢，其实我没有收集蔡徐坤的信息',
+  },
+  {
+    text: '罗志祥', 
+    say: '逗你玩呢，其实我没有收集罗志祥的信息',
+  },
+  {
+    text: '林俊杰', 
+    say: '逗你玩呢，其实我没有收集林俊杰的信息',
+  },
+  {
+    text: '周杰伦', 
+    say: '逗你玩呢，其实我没有收集周杰伦的信息',
   },
   {
     text: '快手666。', 
@@ -125,7 +150,22 @@ app.get('/', function (req, res) {
     };
     let otherData = items.filter( item => (~item.text.indexOf(req.body.text)));
     otherData[0]?res.send(otherData[0]):res.send(notFind);
-    // items.push(req.body); 
+ });
+ app.post('/word/useful', function(req,res){
+  if(!req.body) return res.sendStatus(400);
+    console.log("/goods post request");
+    var items = {
+      say: '感谢您的反馈！'
+    };
+    res.send(items);
+ });
+ app.post('/word/unuseful', function(req,res){
+  if(!req.body) return res.sendStatus(400);
+    console.log("/goods post request");
+    var items = {
+      say: '感谢您的反馈！我会努力改进的。'
+    };
+    res.send(items);
  });
 
  var addresses = [

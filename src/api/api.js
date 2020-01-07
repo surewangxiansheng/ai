@@ -7,3 +7,10 @@ export const getHotword = (param) => {
 export const postWord = (param) => {
   return post('/words', param);//发送
 }
+
+export const postWordUseful = (param) => {
+  return post('/word/useful', param);//
+}
+export const postWordUnuseful = (param) => {
+  return post('/word/unuseful', param);//
+}

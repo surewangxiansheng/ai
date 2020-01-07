@@ -9,7 +9,7 @@
       <section ref="addContent" class="content has-foot" :class="question.list.length>0?'':'has—no-words'" >
       <el-scrollbar style="height:100%" ref="myScrollbar">
       <div class="scroll">
-        <p v-if="hasMore" @click.once="moreNew" class="has-more-text">点击可以查看历史消息哦</p>
+        <p v-show="hasMore" @click.once="moreNew" class="has-more-text">点击可以查看历史消息哦</p>
         <div class="list-container">
           <ul class="list">
             <li v-for="(item,index) in list" :key="index">
@@ -25,7 +25,6 @@
                     <a href="#">-&nbsp;{{guess}}</a>
                   </li>
                 </ul>
-                <!-- silver -->
                 <dl class="feedback" v-if="item.feedback">
                   <dt>问题</dt>
                   <dd class="useful" :style="{ color: item.style }" @click.once="setUseful(item, true)">
@@ -64,10 +63,11 @@
 </template>
 
 <script>
-  import { promised, Promise } from 'q';
   import { 
     getHotword,
-    postWord
+    postWord,
+    postWordUseful,
+    postWordUnuseful
     }
   from '@/api/api.js';
   var db;
@@ -75,21 +75,8 @@
     name: "aiservice",
     data() {
       return {
-        toAlter:'checked',
         formData: {
           word: ""
-        },
-        scrollData: {
-          node: null,
-          scrollNode: null,
-          position: {
-            start: 0,
-            diff: 0,
-            oldDiff: 0,
-            moveIndex: 0,
-            roll: 10,
-            spead: []
-          }
         },
         list: [
           {
@@ -119,7 +106,6 @@
           store: 'message',
           version: 1
         },
-        requestId: '',
         historymsg: true,
         secret:'',
         uid:'',
@@ -140,50 +126,113 @@
       this.isIndexedDB()
     },
     methods: {
-     getHotwordMethod(parma) {
-        var that = this;
-       getHotword(
-          parma
-          ).then((response) => {
-            that.question.list = response.data.words||[];
-            console.log(response)
-          }).catch((err) => {
-            var pushitem = {
+      getHotwordMethod(parma) {
+          var that = this;
+        getHotword(
+            parma
+            ).then((response) => {
+              that.question.list = response.data.words||[];
+              console.log(response)
+            }).catch((err) => {
+              var pushitem = {
+                  received: true,
+                  feedback: false,
+                  useful: false,
+                  tel: false,
+                  content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                  guessList: {
+                  list: []
+                }
+              }
+              that.list.push(pushitem);
+              that.save(that.list);
+              })
+        },
+      postWordMethod(parma) {
+          var that = this;
+        postWord(
+            parma
+            ).then((res) => {
+              res.data.jumps?that.href = res.data.jumps[0].uri:'';
+              var say = res.data.say.replace(/\&nbsp/g, "");
+              var pushitem = {
+                received: true,
+                feedback: true,
+                useful: true,
+                tel: true,
+                linkText: res.data.jumps?res.data.jumps[0].title||'':res.data.jumps,
+                content: say.split('\n'),
+                guessList: {}
+              }
+              console.log(pushitem)
+              res.data.guides ? pushitem.guessList = {
+                title: '猜您想问：',
+                list: res.data.guides
+              } : '';
+              that.list.push(pushitem);
+              that.save(that.list);
+            }).catch((err) => {
+              var pushitem = {
+                  received: true,
+                  feedback: false,
+                  useful: false,
+                  tel: false,
+                  content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                  guessList: {
+                  list: []
+                }
+              }
+              self.list.push(pushitem);
+              self.save(self.list);
+                })
+        }, 
+      postWordUsefulMethod(parma) {
+          var that = this;
+        postWordUseful(
+            parma
+            ).then((res) => {
+              var pushitem = {
                 received: true,
                 feedback: false,
                 useful: false,
                 tel: false,
-                content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                content: res.data.say.split('\n'),
                 guessList: {
-                list: []
+                  list: []
+                }
               }
-            }
-            that.list.push(pushitem);
-            that.save(that.list);
-               })
-      },
-     postWordMethod(parma) {
+              that.list.push(pushitem);
+              that.save(that.list);
+            }).catch((err) => {
+              var pushitem = {
+                  received: true,
+                  feedback: false,
+                  useful: false,
+                  tel: false,
+                  content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
+                  guessList: {
+                  list: []
+                }
+              }
+              that.list.push(pushitem);
+              that.save(that.list);
+              })
+        },
+      postWordUnusefulMethod(parma) {
         var that = this;
-       postWord(
+       postWordUnuseful(
           parma
           ).then((res) => {
-            res.data.jumps?that.href = res.data.jumps[0].uri:'';
-            var say = res.data.say.replace(/\&nbsp/g, "");
-            that.requestId = res.headers['x-request-id'];
             var pushitem = {
               received: true,
-              feedback: true,
-              useful: true,
-              tel: true,
-              linkText: res.data.jumps?res.data.jumps[0].title||'':res.data.jumps,
-              content: say.split('\n'),
-              guessList: {}
+              feedback: false,
+              useful: false,
+              tel: false,
+              content: res.data.say.split('\n'),
+              guessList: {
+                list: []
+              }
             }
-            console.log(pushitem)
-            res.data.guides ? pushitem.guessList = {
-              title: '猜您想问：',
-              list: res.data.guides
-            } : '';
             that.list.push(pushitem);
             that.save(that.list);
           }).catch((err) => {
@@ -197,10 +246,10 @@
                 list: []
               }
             }
-            self.list.push(pushitem);
-            self.save(self.list);
-               })
-      }, 
+            that.list.push(pushitem);
+            that.save(that.list);
+            })
+      },
       isIndexedDB() {
         var self = this;
         this.openDatabase().then(function (db) {
@@ -225,6 +274,7 @@
                 self.list.unshift(historymsgList[i])
               }      
             }
+            self.hasMore = false;
           };
           request.onerror = function (err) {
             console.log(err);
@@ -233,102 +283,10 @@
           console.log('open database error', err);
         });
       },
-      scrollTouch(e) {
-        var self = this;
-        var scroll = {
-          start: function (e) {
-            self.scrollData.position.start = (
-              e.targetTouches[0] ||
-              e.touches[0] ||
-              e.changedTouches[0]
-            ).screenY;
-            self.scrollData.node = e.currentTarget;
-            self.scrollData.scrollNode = e.currentTarget.firstElementChild;
-            self.scrollData.position.diff = this.getTranslateY(
-              self.scrollData.scrollNode
-            );
-            self.scrollData.position.spead.length = 0;
-            self.scrollData.position.oldDiff = 0;
-          },
-          move: function (e) {
-            var y = (e.targetTouches[0] || e.touches[0] || e.changedTouches[0])
-              .screenY;
-            var position = self.scrollData.position;
-            var diffy = y - position.start + position.diff;
-            position.moveIndex =
-              position.moveIndex >= position.spead.length
-                ? 0
-                : position.moveIndex;
-            position.spead[position.moveIndex] = diffy - position.oldDiff;
-            position.oldDiff = diffy;
-            position.moveIndex++;
-            self.scrollData.scrollNode.style["-webkit-transform"] =
-              "translate3d(0," + diffy + "px, 0)";
-            self.scrollData.scrollNode.style.transform =
-              "translate3d(0," + diffy + "px,0)";
-          },
-          end: function (e) {
-            var scrollNode = self.scrollData.scrollNode;
-            var position = self.scrollData.position;
-            var y = (e.targetTouches[0] || e.touches[0] || e.changedTouches[0])
-              .screenY;
-            var diffy = y - position.start + position.diff;
-            var spead = 0;
-            var height = scrollNode.offsetHeight;
-            var clientHeight = self.scrollData.node.offsetHeight;
-            position.spead.forEach(function (item) {
-              spead += spead * item < 0 ? 0 : item;
-            });
-            diffy += spead * position.roll;
-            if (diffy > 0) {
-              self.$emit('overflow', {
-                direction: 'up',
-                diffy: diffy
-              });
-              if (diffy > 20) self.loadMore();
-              diffy = 0;
-            }
-            if (height < clientHeight) height = clientHeight;
-            if (diffy + height - clientHeight < 0) {
-              self.$emit('overflow', {
-                direction: 'down',
-                diffy: diffy
-              });
-              diffy = -height + clientHeight
-            }
-            scrollNode.classList.add("scroll-transition");
-            scrollNode.style["-webkit-transform"] =
-              "translate3d(0," + diffy + "px, 0)";
-            scrollNode.style.transform = "translate3d(0," + diffy + "px,0)";
-            setTimeout(function () {
-              scrollNode.classList.remove("scroll-transition");
-            }, 3000);
-          },
-          getTranslateY: function (node) {
-            var style = window.getComputedStyle(node);
-            var transform = style.transform || style["-webkit-transform"];
-            var y = transform.replace(/\w+\(([,\ \-\d\.]+)\)/i, "$1");
-            y = y.replace(/\s/g, "").split(",")[5] || 0;
-            return y - 0;
-          }
-        };
-        switch (e.type) {
-          case "touchstart":
-            scroll.start(e);
-            break;
-          case "touchmove":
-            scroll.move(e);
-            break;
-          case "touchend":
-            scroll.end(e);
-            break;
-        }
-      },
       check() {
         if (!this.formData.word) return;
       },
       send(text) {
-        // isdo = true;
         if (!text || typeof text !== 'string') {
           text = this.formData.word;
           this.formData.word = "";
@@ -340,6 +298,7 @@
         this.postWordMethod({text: text})
       },
       setUseful(item, type) {
+        console.log(item);
         if(item.disabled){    
           return;
         }
@@ -352,40 +311,7 @@
           sent: true,
           content: type ? '已解决' : '未解决'
         });
-        var self = this;
-        var url = type === true ? '/mb_api/jarvis/ai/v1/channel/' + this.key + '/useful?' : '/mb_api/jarvis/ai/v1/channel/' + this.key + '/unuseful?';
-        url += "uid=" + '911';
-        this.$axios.put(url, { headers: { 'X-Request-ID': self.requestId } }).then(success, error);
-        function success(data) {
-          console.log(data);
-          var pushitem = {
-            received: true,
-            feedback: false,
-            useful: false,
-            tel: false,
-            content: data.data.split('\n'),
-            guessList: {
-              list: []
-            }
-          }
-          self.list.push(pushitem);
-          self.save(self.list);
-          console.log(item,type)
-        }
-        function error(err) {
-          var pushitem = {
-              received: true,
-              feedback: false,
-              useful: false,
-              tel: false,
-              content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
-              guessList: {
-              list: []
-            }
-          }
-          self.list.push(pushitem);
-          self.save(self.list);
-        };
+        type === true ? this.postWordUsefulMethod() : this.postWordUnusefulMethod();
       },
       inputLine(text) {
         this.formData.word = text;
@@ -482,7 +408,7 @@
     height: 3.666rem;
     overflow: hidden;
     line-height: 3.666rem;
-    background-color: #ffd630;
+    background-color: #6bc3dd;
   }
   .left-buttons {
     width: 4rem;
@@ -538,19 +464,18 @@
     background-color: #fff;
     width: 100%;
   }
+
   .flex {
     display: flex;
   }
+
   .flex-1 {
     flex: 1;
   }
-  .content .el-scrollbar__wrap {
-    overflow-x:hidden;
-    position: relative;
-  }
+  
   .has-more-text {
     font-size: 1rem;
-    color: #a1a6b3;
+    color: black;
     text-align: center;
     margin: 1rem 0;
   }
@@ -642,9 +567,6 @@
     color: #477bef;
   }
 
-  /* .guess-list a:visited {
-  color: #a1a6b3;
-} */
   .guess-title {
     text-indent: 1rem;
     font-weight: 600;
@@ -661,12 +583,13 @@
 
   .feedback dt {
     display: inline-block;
+    margin-right: 0.3rem;
   }
   .useful {
-    background-image: url("../assets/icons/icon-useful.png");
+    background-image: url("../assets/icons/heart.jpg");
   }
   .useless {
-    background-image: url("../assets/icons/icon-useful-down.png");
+    background-image: url("../assets/icons/heartBreak.jpg");
   }
   .feedback dd {
     display: inline-block;
@@ -674,7 +597,6 @@
     border-radius: 3rem;
     padding: 0.5rem 0.8rem 0.5rem 2.5rem;
     margin-left: 0.5rem;
-    /* background-image: url("../assets/icons/icon-useful.png"); */
     background-size: 1.5rem;
     background-repeat: no-repeat;
     background-position: 0.5rem center;
@@ -693,7 +615,6 @@
 
   .foot {
     width: 100%;
-    /* height: 8.5rem; */
     overflow: hidden;
   }
 
@@ -779,24 +700,13 @@
     display: block;
     word-break: break-word;
   }
-  /* .received-content .content-bold:first-line {
-    font-weight: bold;
-  } */
   .received-content .content-bold:first-child {
     font-weight: bold;
   }
-  /* .received-content .content-bold {
-    font-weight: bold;
-  } */
   @media (max-width:415px) {
     .feedback dd:last-child{
       margin: 1rem 0 0 3.2rem;
     }
-      /* .foot {
-    width: 100%;
-    height: 10.5rem;
-    overflow: hidden;
-  } */
 }
 
 </style>
