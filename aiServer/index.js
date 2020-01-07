@@ -38,7 +38,7 @@ app.get('/', function (req, res) {
  app.get('/searchWords', function(req,res){
     console.log("/words get request");
  var items = {words:[
-              {hotwords:'吃饭'},
+              {hotwords:'四川大学锦城学院'},
               {hotwords:'睡觉'},
               {hotwords:'王者荣耀'},
               {hotwords:'抖音'},
@@ -49,44 +49,83 @@ app.get('/', function (req, res) {
       res.send(items);
  });
 
-
+ var items = [
+  //闲聊
+  {
+    text: '我', 
+    say: '???',
+    guides: ['我帅吗？','我漂亮吗？']
+  },
+  {
+    text: '你是谁？', 
+    say: '我是你爸爸。',
+  },
+  {
+    text: '我帅吗？', 
+    say: '我吐了！',
+  },
+  {
+    text: '我漂亮吗？', 
+    say: '我吐了！',
+  },
+  {
+    text: '四川大学锦城学院在哪里', 
+    say: '四川大学锦城学院（Jincheng College of Sichuan University）位于四川省会成都市，是经中华人民共和国教育部批准、由教育部直属高校四川大学申办、四川锦城实业发展有限公司投资的全日制普通本科高校，多学科、综合性的应用型大学。\n学校成立时间:  2005年5月9日\n地处:  四川省成都市成都高新技术产业开发区西部园区西源大道1号',
+    jumps: [{
+      uri:'http://www.scujcc.edu.cn/',
+      title: '学校官网'
+        }],
+    guides: ['学校规模','知名校友','主要院系']
+  },
+  {
+    text: '学校规模', 
+    say: '四川大学锦城学院校园占地面积1500余亩，现设有11个二级学院、52个本科专业、18个专科专业、100余个专业方向，在校师生20000余人，本科生16000余人，形成了文、理、工、经、管、艺六个学科门类协调发展，多层次、多形式的专业门类较为齐全的综合性的办学格局。',
+  },
+  {
+    text: '四川大学锦城学院知名校友', 
+    say: '张皓宸、陈钰琪、凌菱、廖翎结、欧九儿',
+  },
+  {
+    text: '四川大学锦城学院主要院系', 
+    say: '四川大学锦城学院主要院系有:\n电子信息学院\n计算机与软件学院\n财务会计学院\n金融学院\n艺术学院\n工商管理学院\n文学与传媒学院\n建筑学院\n文学与传媒学院等',
+  },
+  //闲聊
+  {
+    text: '王者荣耀。', 
+    say: '王者',
+    jumps: [{
+      uri:'http://baidu.com',
+      title: '跳一跳'
+        }]
+  },
+  {
+    text: '明星。', 
+    say: '什么明星呢？',
+    jumps: [{
+      uri:'www.baidu.com',
+      title: '跳一跳'
+        }],
+    guides: ['蔡许昆','罗志祥']
+  },
+  {
+    text: '快手666。', 
+    say: '快手666\n1.下去\n2.上去',
+    jumps: [{
+      uri:'www.baidu.com',
+      title: '跳一跳'
+        }],
+    guides: ['qqqq','eeee']
+  }
+];
  app.post('/words', function(req,res){
   if(!req.body) return res.sendStatus(400);
     console.log("/goods post request");
     var notFind = {
       say: '你说什么？我没带眼镜听不见，请再说一次'
     };
-    var items = [
-      {
-        text: '王者荣耀', 
-        say: '王者',
-        jumps: [{
-          uri:'www.baidu.com',
-          title: '跳一跳'
-            }]
-      },
-      {
-        text: '快手', 
-        say: '快手',
-        jumps: [{
-          uri:'www.baidu.com',
-          title: '跳一跳'
-            }],
-        guides: ['蔡许昆','罗志祥']
-      }
-    ];
-    for(let i=0,len=items.length;i<len;i++) {
-      if(items[i].text == req.body.text) {
-        res.send(items[i])
-        return
-      } 
-      // else {
-      //   res.send(notFind)
-      //   return
-      // }
-    }
+    let otherData = items.filter( item => (~item.text.indexOf(req.body.text)));
+    otherData[0]?res.send(otherData[0]):res.send(notFind);
     // items.push(req.body); 
-    res.send(notFind);
  });
 
  var addresses = [
