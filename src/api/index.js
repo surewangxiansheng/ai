@@ -5,7 +5,7 @@ const service = axios.create({
   timeout: 10000, // 请求超时时间
   // baseURL: process.env.BASE_URL
   baseURL: "http://localhost:9090",//本地运行
-  // baseURL: "http://192.168.0.102:9090",    //手机访问  前面为同一无线网ip  后为端口
+  // baseURL: "http://192.168.43.101:9090",    //手机访问  前面为同一无线网ip  后为端口
   // operationURl:
   // headers: {
   //   'Content-Type': 'application/json; charset=utf-8'

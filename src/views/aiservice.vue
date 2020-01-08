@@ -82,7 +82,7 @@
           {
             received: true,
             content:
-              ["Hi~您好，我是聪明的机器人，为您提供自助服务，请问有什么想对我说的吗？"],
+              ["Hi~您好，我是睿智的机器人，为您提供自助服务，请问有什么想对我说的吗？"],
             guessList: {
               title: '',
               list: []
@@ -123,7 +123,7 @@
     },
     created() {
       this.getHotwordMethod();
-      this.isIndexedDB()
+      this.isIndexedDB();
     },
     methods: {
       getHotwordMethod(parma) {
@@ -141,7 +141,7 @@
                   tel: false,
                   content: err.response.data?err.response.data.split('\n'):err.message.split('\n'),
                   guessList: {
-                  list: []
+                    list: []
                 }
               }
               that.list.push(pushitem);
@@ -153,6 +153,21 @@
         postWord(
             parma
             ).then((res) => {
+              if(res.data.say == '时间') {
+                var pushitem = {
+                  received: true,
+                  feedback: true,
+                  useful: false,
+                  tel: false,
+                  content: [this.getDate()],
+                  guessList: {
+                    list: []
+                  }
+                }
+                that.list.push(pushitem);
+                that.save(that.list);
+                return
+              }
               res.data.jumps?that.href = res.data.jumps[0].uri:'';
               var say = res.data.say.replace(/\&nbsp/g, "");
               var pushitem = {
@@ -260,6 +275,23 @@
         }, function (err) {
           console.log('open database error', err);
         });
+      },
+      getDate() {
+        var now = new Date;
+        var h = now.getHours();
+        var mm = now.getMinutes();
+        var str;
+        if (h > 12) {
+          h -= 12;
+          str = " PM";
+        } else {
+          str = " AM";
+        }
+        h = h < 10 ? "0" + h : h;
+        mm = mm < 10 ? "0" + mm : mm;
+        var xy = h + ":" + mm;
+        xy += str;
+        return xy
       },
       moreNew() {
         if (!this.hasMore) return;
