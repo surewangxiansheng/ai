@@ -178,7 +178,7 @@
                 linkText: res.data.jumps?res.data.jumps[0].title||'':res.data.jumps,
                 content: say.split('\n'),
                 guessList: {}
-              }
+              } 
               console.log(pushitem)
               res.data.guides ? pushitem.guessList = {
                 title: '猜您想问：',
