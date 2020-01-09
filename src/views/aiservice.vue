@@ -119,7 +119,7 @@
         let contentHight = document.querySelector('.foot').clientHeight;
         scrolldom.style.bottom = contentHight/16+2 + "rem";
         }
-        ,1000)
+        ,1500)
     },
     created() {
       this.getHotwordMethod();
