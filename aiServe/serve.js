@@ -1,6 +1,9 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+const path = require('path')
+
+app.use(express.static(path.join(__dirname, '../dist')))
 
 // 创建 application/x-www-form-urlencoded 编码解析
 // var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -36,7 +39,6 @@ app.get('/', function (req, res) {
 //  });
 
  app.get('/searchWords', function(req,res){
-    console.log("/words get request");
  var items = {words:[
               {hotwords:'四川大学锦城学院'},
               {hotwords:'美食'},
@@ -168,7 +170,6 @@ app.get('/', function (req, res) {
 ];
  app.post('/words', function(req,res){
   if(!req.body) return res.sendStatus(400);
-    console.log("/goods post request");
     var notFind = {
       say: '你说什么？我没带眼镜听不见，请换个方式再说一次'
     };
@@ -177,7 +178,6 @@ app.get('/', function (req, res) {
  });
  app.post('/word/useful', function(req,res){
   if(!req.body) return res.sendStatus(400);
-    console.log("/goods post request");
     var items = {
       say: '感谢您的反馈！'
     };
@@ -185,7 +185,6 @@ app.get('/', function (req, res) {
  });
  app.post('/word/unuseful', function(req,res){
   if(!req.body) return res.sendStatus(400);
-    console.log("/goods post request");
     var items = {
       say: '感谢您的反馈！我会努力改进的。'
     };
