@@ -112,6 +112,12 @@
         sec:''
       };
     },
+    computed: {
+      week: function () {
+        let h = ['日','一','二','三','四','五','六'];
+        return '星期'+h[(new Date).getDay()]
+      }
+    },
     mounted() {
       //动态获取，改变内容框bottom
       var scrolldom = this.$refs.addContent;
@@ -159,7 +165,22 @@
                   feedback: true,
                   useful: false,
                   tel: false,
-                  content: [this.getDate()],
+                  content: [that.getDate()],
+                  guessList: {
+                    list: []
+                  }
+                }
+                that.list.push(pushitem);
+                that.save(that.list);
+                return
+              }
+              else if(res.data.say == '星期') {
+                var pushitem = {
+                  received: true,
+                  feedback: true,
+                  useful: false,
+                  tel: false,
+                  content: ['今天是'+that.week],
                   guessList: {
                     list: []
                   }
@@ -277,10 +298,10 @@
         });
       },
       getDate() {
-        var now = new Date;
-        var h = now.getHours();
-        var mm = now.getMinutes();
-        var str;
+        let now = new Date;
+        let h = now.getHours();
+        let mm = now.getMinutes();
+        let str;
         if (h > 12) {
           h -= 12;
           str = " PM";
@@ -289,7 +310,7 @@
         }
         h = h < 10 ? "0" + h : h;
         mm = mm < 10 ? "0" + mm : mm;
-        var xy = h + ":" + mm;
+        let xy = h + ":" + mm;
         xy += str;
         return xy
       },

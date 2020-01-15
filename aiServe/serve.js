@@ -27,25 +27,13 @@ app.get('/', function (req, res) {
    res.send('Hello World');
 });
 
-
-//  app.post('/students', function(req,res){
-//      console.log("/students POST request");
-//      var data = req.body;
-//      if( data ){
-//         data.id = ++id;
-//         students.push(data);
-//      };
-//      res.send(data);
-//  });
-
  app.get('/searchWords', function(req,res){
  var items = {words:[
               {hotwords:'四川大学锦城学院'},
               {hotwords:'美食'},
               {hotwords:'王者荣耀'},
               {hotwords:'当前时间'},
-              {hotwords:'快手'},
-              {hotwords:'音乐'},
+              {hotwords:'锦城校训'},
               {hotwords:'明星'}
             ]}
       res.send(items);
@@ -63,6 +51,10 @@ app.get('/', function (req, res) {
     say: '我是你爸爸。',
   },
   {
+    text: '我是谁？', 
+    say: '你是个屁。',
+  },
+  {
     text: '我帅吗？', 
     say: '我吐了！',
   },
@@ -71,8 +63,37 @@ app.get('/', function (req, res) {
     say: '我吐了！',
   },
   {
+    text: '啊。', 
+    say: 'awsl',
+  },
+  {
+    text: '哈哈', 
+    say: '别笑了。',
+  },
+  {
+    text: '哈哈哈', 
+    say: '别笑了。',
+  },
+  {
+    text: '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈', 
+    say: '你怕是抽风了。',
+  },
+  {
     text: '滚啊。', 
     say: '文明，和谐',
+  },
+  {
+    text: '你会说话吗？', 
+    say: '我giao你个giao giao。',
+  },
+  {
+    text: '我饿了。', 
+    say: '嘤嘤嘤，我也是呢。',
+  },
+  {
+    text: '我想吃东西了。', 
+    say: '想吃什么呢？',
+    guides: ['美食']
   },
   {
     text: '四川大学锦城学院在哪里', 
@@ -82,6 +103,11 @@ app.get('/', function (req, res) {
       title: '四川大学锦城学院学校官网'
         }],
     guides: ['学校规模','知名校友','主要院系','美食']
+  },
+  {
+    text: '四川大学锦城学院校训', 
+    say: '四川大学锦城学院校训：止于至善\n释义：引用了中国古代典籍《大学》开篇语“大学之道，在明明德，在亲民，在止于至善。”告诫学院教职员工和锦城学子读书学习、做人做事应当追求卓越、追求完美、追求最好，不断探索，永不满足，力争达到最佳境界。',
+    guides: ['美食','学校规模','知名校友','主要院系']
   },
   {
     text: '四川大学锦城学院学校规模', 
@@ -132,6 +158,14 @@ app.get('/', function (req, res) {
     say: '时间',
   },
   {
+    text: '今天星期几？', 
+    say: '星期',
+  },
+  {
+    text: '今天是星期几？', 
+    say: '星期',
+  },
+  {
     text: '明星。', 
     say: '什么明星呢？',
     guides: ['蔡徐坤','罗志祥','林俊杰','周杰伦']
@@ -164,6 +198,11 @@ app.get('/', function (req, res) {
   },
   {
     text: '四川大学锦城学院有什么美食？', 
+    say: '这里的美食还是很多呢，我就给你推荐几个吧\n1.三食堂鸡公煲\n2.一食堂特色热拌菜\n3.二食堂酱鸭饭\n4.杏岛餐厅\n5.四食堂麻油抄手等等',
+    guides: ['学校规模','主要院系']
+  },
+  {
+    text: '四川大学锦城学院有什么吃的？', 
     say: '这里的美食还是很多呢，我就给你推荐几个吧\n1.三食堂鸡公煲\n2.一食堂特色热拌菜\n3.二食堂酱鸭饭\n4.杏岛餐厅\n5.四食堂麻油抄手等等',
     guides: ['学校规模','主要院系']
   }
