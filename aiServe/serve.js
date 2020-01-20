@@ -42,7 +42,7 @@ app.get('/', function (req, res) {
  var items = [
   //闲聊
   {
-    text: '我', 
+    text: '我？', 
     say: '???',
     guides: ['我帅吗？','我漂亮吗？']
   },

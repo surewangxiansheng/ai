@@ -6,59 +6,59 @@
       </div>
       <h1 class="head-title">智能客服</h1>
     </header>
-      <section ref="addContent" class="content has-foot" :class="question.list.length>0?'':'has—no-words'" >
-      <el-scrollbar style="height:100%" ref="myScrollbar">
-      <div class="scroll">
-        <p v-show="hasMore" @click.once="moreNew" class="has-more-text">点击可以查看历史消息哦</p>
-        <div class="list-container">
-          <ul class="list">
-            <li v-for="(item,index) in list" :key="index">
-              <div v-if="item.received" class="message-received">
-                <p v-if="item.title" class="received-title">{{item.title}}</p>
-                <p class="received-content">
-                  <span class="content-bold" v-for="(say,index) in item.content" :key="index">{{say}}</span>
-                </p>
-                <button v-if="item.linkText" class="button-link"> <a class="title_btn" :href="href">{{item.linkText}}</a></button>
-                <ul v-if="item.guessList.list" class="guess-list">
-                  <li class="guess-title">{{item.guessList.title}}</li>
-                  <li v-for="(guess,index) in item.guessList.list" :key="index" @click="send(guess)">
-                    <a href="#">-&nbsp;{{guess}}</a>
-                  </li>
-                </ul>
-                <dl class="feedback" v-if="item.feedback">
-                  <dt>问题</dt>
-                  <dd class="useful" :style="{ color: item.style }" @click.once="setUseful(item, true)">
-                    已解决</dd>
-                  <dd class="useless" :style="{ color: item.style2 }" @click.once="setUseful(item, false)">
-                    未解决</dd>
-                </dl>
-                <div v-if="item.tel" class="tel-container">
-                  <a href="tel:123456" class="button-tel">联系人工客服</a>
-                </div>             
-              </div>
-              <div v-if="item.sent" class="message-sent">
-                <p class="send-content">{{item.content}}</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+    <section ref="addContent" class="content has-foot" :class="question.list.length>0?'':'has—no-words'" >
+    <el-scrollbar style="height:100%" ref="myScrollbar">
+    <div class="scroll">
+      <p v-show="hasMore" @click.once="moreNew" class="has-more-text">点击可以查看历史消息哦</p>
+      <div class="list-container">
+        <ul class="list">
+          <li v-for="(item,index) in list" :key="index">
+            <div v-if="item.received" class="message-received">
+              <p v-if="item.title" class="received-title">{{item.title}}</p>
+              <p class="received-content">
+                <span class="content-bold" v-for="(say,index) in item.content" :key="index">{{say}}</span>
+              </p>
+              <button v-if="item.linkText" class="button-link"> <a class="title_btn" :href="href">{{item.linkText}}</a></button>
+              <ul v-if="item.guessList.list" class="guess-list">
+                <li class="guess-title">{{item.guessList.title}}
+                </li>
+                <li v-for="(guess,index) in item.guessList.list" :key="index" @click="send(guess)">
+                  <a href="#">-&nbsp;{{guess}}</a>
+                </li>
+              </ul>
+              <dl class="feedback" v-if="item.feedback">
+                <dt>问题</dt>
+                <dd class="useful" :style="{ color: item.style }" @click.once="setUseful(item, true)">
+                  已解决</dd>
+                <dd class="useless" :style="{ color: item.style2 }" @click.once="setUseful(item, false)">
+                  未解决</dd>
+              </dl>
+              <div v-if="item.tel" class="tel-container">
+                <a href="tel:123456" class="button-tel">联系人工客服</a>
+              </div>             
+            </div>
+            <div v-if="item.sent" class="message-sent">
+              <p class="send-content">{{item.content}}</p>
+            </div>
+          </li>
+        </ul>
       </div>
-    </el-scrollbar>
-
-    </section>
-    <footer class="foot" id="footer" :class="question.list.length>0?'':'has—no-words'">
-      <ul class="question-list" v-if="question.list.length>0">
-        <li v-for="(item,index) in question.list" :key="index" @click="inputLine(item.hotwords)">{{item.hotwords}}</li>
-      </ul>
-      <form name="questionform">
-        <div class="question flex">
-          <input type="text" v-model="formData.word" class="flex-1" placeholder="请输入您要咨询的问题" @input="check" />
-          <!-- <button class="button-add">+</button> -->
-          <button type="button" class="button-send" :class="formData.word ? 'button-send-show' : ''"
-            @click="send">发送</button>
-        </div>
-      </form>
-    </footer>
+    </div>
+  </el-scrollbar>
+  </section>
+  <footer class="foot" id="footer" :class="question.list.length>0?'':'has—no-words'">
+    <ul class="question-list" v-if="question.list.length>0">
+      <li v-for="(item,index) in question.list" :key="index" @click="inputLine(item.hotwords)">{{item.hotwords}}</li>
+    </ul>
+    <form name="questionform">
+      <div class="question flex">
+        <input type="text" v-model="formData.word" class="flex-1" placeholder="请输入您要咨询的问题" @input="check" />
+        <!-- <button class="button-add">+</button> -->
+        <button type="button" class="button-send" :class="formData.word ? 'button-send-show' : ''"
+          @click="send">发送</button>
+      </div>
+    </form>
+  </footer>
   </div> 
 </template>
 
@@ -115,7 +115,7 @@
     computed: {
       week: function () {
         let h = ['日','一','二','三','四','五','六'];
-        return '星期'+h[(new Date).getDay()]
+        return '星期' + h[(new Date).getDay()]
       }
     },
     mounted() {
@@ -165,7 +165,7 @@
                   feedback: true,
                   useful: false,
                   tel: false,
-                  content: [that.getDate()],
+                  content: ['现在时间是: '+that.getDate()],
                   guessList: {
                     list: []
                   }
@@ -323,7 +323,7 @@
           request.onsuccess = function (e) {
             if (request.result) {
               let historymsgList = request.result.message.reverse();
-              for(var i=0,len=historymsgList.length;i<len;i++){
+              for(let i=0,len=historymsgList.length;i<len;i++){
                 self.list.unshift(historymsgList[i])
               }      
             }
