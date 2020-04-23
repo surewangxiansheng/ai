@@ -18,7 +18,7 @@
               <p class="received-content">
                 <span class="content-bold" v-for="(say,index) in item.content" :key="index">{{say}}</span>
               </p>
-              <button v-if="item.linkText" class="button-link"> <a class="title_btn" :href="href">{{item.linkText}}</a></button>
+              <button v-if="item.linkText" class="button-link"> <a class="title_btn" :href="item.hrefUrl">{{item.linkText}}</a></button>
               <ul v-if="item.guessList.list" class="guess-list">
                 <li class="guess-title">{{item.guessList.title}}
                 </li>
@@ -92,7 +92,8 @@
             tel: false,
             style:'',
             style2:'',
-            disabled: false
+            disabled: false,
+            hrefUrl:''
           }
         ],
         linkText: '',
@@ -125,7 +126,7 @@
         let contentHight = document.querySelector('.foot').clientHeight;
         scrolldom.style.bottom = contentHight/16+2 + "rem";
         }
-        ,1500)
+        ,1000)
     },
     created() {
       this.getHotwordMethod();
@@ -189,7 +190,7 @@
                 that.save(that.list);
                 return
               }
-              res.data.jumps?that.href = res.data.jumps[0].uri:'';
+              res.data.jumps?that.hrefUrl = res.data.jumps[0].uri:'';
               var say = res.data.say.replace(/\&nbsp/g, "");
               var pushitem = {
                 received: true,
@@ -198,7 +199,8 @@
                 tel: true,
                 linkText: res.data.jumps?res.data.jumps[0].title||'':res.data.jumps,
                 content: say.split('\n'),
-                guessList: {}
+                guessList: {},
+                hrefUrl: res.data.jumps?res.data.jumps[0].uri:''
               } 
               console.log(pushitem)
               res.data.guides ? pushitem.guessList = {

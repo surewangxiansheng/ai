@@ -9,8 +9,8 @@ export const postWord = (param) => {
 }
 
 export const postWordUseful = (param) => {
-  return post('/word/useful', param);//
+  return post('/word/useful', param);//已解决
 }
 export const postWordUnuseful = (param) => {
-  return post('/word/unuseful', param);//
+  return post('/word/unuseful', param);//未解决
 }
