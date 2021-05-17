@@ -16,6 +16,7 @@ export default {
     };
   },
   created() {
+    //我在测试git呢
     console.log(this.suiji());
     console.log(this.sum(8563));
   },
