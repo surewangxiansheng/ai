@@ -22,3 +22,8 @@ yarn lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Run node serve
+```
+you can run "node serve.js" at directory: /aiServe
+```
