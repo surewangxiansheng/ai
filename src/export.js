@@ -4,6 +4,7 @@ const Excel = require('exceljs')
 import FileSaver from 'file-saver'
 export var testaaa = function (){
   console.log("...");
+  // console.log("...");
 }
 export var exportExcel = function(luckysheet, value) {
   // 参数为luckysheet.getluckysheetfile()获取的对象
